@@ -1,32 +1,35 @@
-import { NgFor, NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { randStudent, randTeacher } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
+import { Store } from '../../data-access/store';
 import { ListItemComponent } from '../list-item/list-item.component';
 
 @Component({
   selector: 'app-card',
+  standalone: true,
+  imports: [NgTemplateOutlet, ListItemComponent],
   template: `
     <div
       class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
       [class]="customClass">
-      <img
-        *ngIf="type === CardType.TEACHER"
-        src="assets/img/teacher.png"
-        width="200px" />
-      <img
-        *ngIf="type === CardType.STUDENT"
-        src="assets/img/student.webp"
-        width="200px" />
+      <ng-content selector=".image"></ng-content>
 
       <section>
-        <app-list-item
-          *ngFor="let item of list"
-          [name]="item.firstName"
-          [id]="item.id"
-          [type]="type"></app-list-item>
+        @for (item of list; track item.id) {
+          <div>
+            <slot
+              [ngTemplateOutlet]="testTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item }"></slot>
+            <button class="delete" (click)="delete(item.id)">
+              <img class="h-5" src="assets/svg/trash.svg" />
+            </button>
+          </div>
+
+          <!-- <app-list-item [name]="item.firstName || item.name || ''">
+            <button class="delete" (click)="delete(item.id)">
+              <img class="h-5" src="assets/svg/trash.svg" />
+            </button>
+          </app-list-item> -->
+        }
       </section>
 
       <button
@@ -36,26 +39,39 @@ import { ListItemComponent } from '../list-item/list-item.component';
       </button>
     </div>
   `,
-  standalone: true,
-  imports: [NgIf, NgFor, ListItemComponent],
+  styles: [
+    `
+      .bg-light-red {
+        background-color: rgba(250, 0, 0, 0.1);
+      }
+      .bg-light-green {
+        background-color: rgba(0, 250, 0, 0.1);
+      }
+      .bg-light-blue {
+        background-color: rgba(0, 0, 250, 0.1);
+      }
+    `,
+  ],
 })
-export class CardComponent {
-  @Input() list: any[] | null = null;
-  @Input() type!: CardType;
-  @Input() customClass = '';
-
-  CardType = CardType;
-
-  constructor(
-    private teacherStore: TeacherStore,
-    private studentStore: StudentStore,
-  ) {}
+export class CardComponent<
+  T extends { id: number; firstName?: string; name?: string },
+> {
+  @Input({ required: true }) list!: T[];
+  @Input({ required: true }) store!: Store<T>;
+  @Input({ required: true }) randomItem!: () => T;
+  @Input() customClass:
+    | 'bg-light-red'
+    | 'bg-light-green'
+    | 'bg-light-blue'
+    | '' = '';
+  @ContentChild('testRef', { read: TemplateRef })
+  testTemplate!: TemplateRef<{ $implicit: T }>;
 
   addNewItem() {
-    if (this.type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (this.type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    }
+    this.store.addOne(this.randomItem());
+  }
+
+  delete(id: number) {
+    this.store.deleteOne(id);
   }
 }

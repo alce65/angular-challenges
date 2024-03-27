@@ -12,6 +12,14 @@ import { TeacherCardComponent } from './component/teacher-card/teacher-card.comp
       <app-city-card></app-city-card>
     </div>
   `,
+  styles: [
+    `
+      :host {
+        display: block;
+        padding: 20px;
+      }
+    `,
+  ],
   standalone: true,
   imports: [TeacherCardComponent, StudentCardComponent, CityCardComponent],
 })

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Student } from '../model/student.model';
+import { Store } from './store';
 
 @Injectable({
   providedIn: 'root',
 })
-export class StudentStore {
+export class StudentStore implements Store<Student> {
   private students = new BehaviorSubject<Student[]>([]);
   students$ = this.students.asObservable();
 
@@ -17,7 +18,7 @@ export class StudentStore {
     this.students.next([...this.students.value, student]);
   }
 
-  deleteOne(id: number) {
+  deleteOne(id: Student['id']) {
     this.students.next(this.students.value.filter((s) => s.id !== id));
   }
 }

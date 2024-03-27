@@ -16,7 +16,7 @@ import { Teacher, subject } from '../model/teacher.model';
 
 const factoryTeacher = incrementalNumber();
 
-export const randTeacher = () => ({
+export const randTeacher = (): Teacher => ({
   id: factoryTeacher(),
   firstName: randFirstName(),
   lastName: randLastName(),
@@ -58,6 +58,7 @@ export const randomCity = (): City => ({
 
 const cities = [randomCity(), randomCity(), randomCity()];
 
+const randomItems = { randTeacher, randStudent, randomCity } as const;
 @Injectable({
   providedIn: 'root',
 })
@@ -65,4 +66,8 @@ export class FakeHttpService {
   fetchTeachers$ = timer(500).pipe(map(() => teachers));
   fetchStudents$ = timer(500).pipe(map(() => students));
   fetchCities$ = timer(500).pipe(map(() => cities));
+
+  randomItem<T>(itemName: keyof typeof randomItems): () => T {
+    return randomItems[itemName] as () => T;
+  }
 }

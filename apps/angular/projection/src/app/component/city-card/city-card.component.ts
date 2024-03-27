@@ -1,13 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { CityStore } from '../../data-access/city.store';
+import { FakeHttpService } from '../../data-access/fake-http.service';
+import { City } from '../../model/city.model';
+import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-city-card',
-  template: 'TODO City',
   standalone: true,
-  imports: [],
+  imports: [CardComponent, ListItemComponent, AsyncPipe],
+  template: `
+    @if (store.state | async; as cities) {
+      <app-card
+        [list]="cities"
+        [store]="store"
+        [randomItem]="randomItem"
+        customClass="bg-light-blue">
+        <img [src]="image" width="200px" />
+        <ng-template #testRef let-item>
+          <app-list-item
+            [name]="item.firstName || item.name || ''"></app-list-item>
+        </ng-template>
+      </app-card>
+    }
+  `,
 })
 export class CityCardComponent implements OnInit {
-  constructor() {}
+  cities: City[] = [];
+  private http = inject(FakeHttpService);
+  protected store = inject(CityStore);
+  randomItem = this.http.randomItem<City>('randomCity');
+  image = 'assets/img/city.png';
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.http.fetchCities$.subscribe((cities) => this.store.addAll(cities));
+  }
 }
