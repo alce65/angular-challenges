@@ -1,4 +1,14 @@
-import { Component } from '@angular/core';
+import {
+  animate,
+  query,
+  stagger,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { Component, OnInit } from '@angular/core';
+import { timer } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -16,10 +26,14 @@ import { Component } from '@angular/core';
         @apply flex-1;
       }
     }
+
+    .info {
+      transform: translateX(-2000px);
+    }
   `,
   template: `
     <div class="mx-20 my-40 flex gap-5">
-      <section>
+      <section class="info" [@loadedInfo]="loadedIn">
         <div>
           <h3>2008</h3>
           <p>
@@ -51,38 +65,48 @@ import { Component } from '@angular/core';
         </div>
       </section>
 
-      <section>
-        <div class="list-item">
-          <span>Name:</span>
-          <span>Samuel</span>
-        </div>
-
-        <div class="list-item">
-          <span>Age:</span>
-          <span>28</span>
-        </div>
-
-        <div class="list-item">
-          <span>Birthdate:</span>
-          <span>02.11.1995</span>
-        </div>
-
-        <div class="list-item">
-          <span>City:</span>
-          <span>Berlin</span>
-        </div>
-
-        <div class="list-item">
-          <span>Language:</span>
-          <span>English</span>
-        </div>
-
-        <div class="list-item">
-          <span>Like Pizza:</span>
-          <span>Hell yeah</span>
-        </div>
+      <section class="data" [@loadedData]>
+        @for (item of data; track $index) {
+          <div class="list-item">
+            <span>{{ item[0] }}:</span>
+            <span>{{ item[1] }}</span>
+          </div>
+        }
       </section>
     </div>
   `,
+  animations: [
+    trigger('loadedInfo', [
+      state('in', style({ transform: 'translateX(0)' })),
+      transition('* => in', animate('1s ease-in')),
+    ]),
+    trigger('loadedData', [
+      transition(':enter', [
+        query('.list-item', [
+          style({ opacity: 0, transform: 'translateX(-30px)' }),
+          stagger(100, [
+            animate('1s ease-in'),
+            style({ opacity: 1, transform: 'translateX(0)' }),
+          ]),
+        ]),
+      ]),
+    ]),
+  ],
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  loadedIn: string | undefined;
+  data = Object.entries({
+    name: 'Samuel',
+    age: 28,
+    birthDate: '02.11.1995',
+    city: 'Berlin',
+    language: 'English',
+    likePizza: true,
+  });
+
+  ngOnInit(): void {
+    timer(1).subscribe(() => {
+      this.loadedIn = 'in';
+    });
+  }
+}
