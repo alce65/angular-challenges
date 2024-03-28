@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { NavButtonComponent } from './nav-button.component';
+import { HeaderComponent } from '../components/header.component';
+import { NavButtonComponent } from '../components/nav-button.component';
 
 @Component({
   standalone: true,
-  imports: [NavButtonComponent],
+  imports: [NavButtonComponent, HeaderComponent],
   selector: 'app-foo',
   template: `
+    <app-header>Foo Page</app-header>
     Welcome to foo page
     <nav-button href="home" class="fixed left-1/2 top-3">Home Page</nav-button>
     <div class="h-screen bg-blue-200">section 1</div>
