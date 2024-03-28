@@ -4,7 +4,11 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <div>Home</div>
+    <div>
+      <header>
+        <h1>Home Page</h1>
+      </header>
+    </div>
   `,
 })
 export default class HomeComponent {}

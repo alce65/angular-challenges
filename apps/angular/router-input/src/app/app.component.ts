@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, RouterModule, ReactiveFormsModule],
+  imports: [RouterModule, ReactiveFormsModule],
   selector: 'app-root',
   template: `
     <label for="userName">UserName</label>
