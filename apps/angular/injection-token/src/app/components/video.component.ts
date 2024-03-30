@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TimerContainerComponent } from './timer-container.component';
+import { TimerContainerComponent } from '../timer-container.component';
 
 @Component({
   selector: 'app-video',
