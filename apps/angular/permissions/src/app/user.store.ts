@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { User } from './user.model';
+import { Role, User } from './user.model';
+
+export type Permission = 'ADMIN' | Role;
 
 @Injectable({
   providedIn: 'root',
@@ -11,5 +13,14 @@ export class UserStore {
 
   add(user: User) {
     this.user.next(user);
+  }
+
+  isAllowed(validPermissions: Permission[]) {
+    const permissions = this.user.value?.isAdmin
+      ? ['ADMIN']
+      : this.user.value?.roles || [];
+    return validPermissions.some((permission) =>
+      permissions.includes(permission),
+    );
   }
 }

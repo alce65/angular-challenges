@@ -8,6 +8,11 @@ import { RouterOutlet } from '@angular/router';
   template: `
     <router-outlet></router-outlet>
   `,
-  styles: [],
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  host: { class: 'm-3' },
 })
 export class AppComponent {}
