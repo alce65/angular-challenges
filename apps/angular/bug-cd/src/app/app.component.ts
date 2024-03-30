@@ -8,7 +8,10 @@ import { RouterOutlet } from '@angular/router';
   template: `
     <h1 class="px-4 py-2 text-xl">My Application</h1>
     <section class="flex">
-      <router-outlet name="side" />
+      <div class="side">
+        <router-outlet name="side" />
+      </div>
+
       <div class="border p-4">
         <router-outlet />
       </div>
@@ -17,5 +20,11 @@ import { RouterOutlet } from '@angular/router';
   host: {
     class: 'flex flex-col gap-2',
   },
+  styles: `
+    .side {
+      width: 20%;
+      border: 1px solid #ccc;
+    }
+  `,
 })
 export class AppComponent {}
